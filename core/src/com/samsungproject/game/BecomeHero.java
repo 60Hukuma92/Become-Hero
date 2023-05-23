@@ -10,7 +10,6 @@ public class BecomeHero extends Game {
 	public static final int VIRTUAL_WIDTH = 400;
 	public static final int VIRTUAL_HEIGHT = 220;
 	public SpriteBatch batch;
-	Texture img;
 	
 	@Override
 	public void create () {
@@ -26,6 +25,5 @@ public class BecomeHero extends Game {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
 	}
 }

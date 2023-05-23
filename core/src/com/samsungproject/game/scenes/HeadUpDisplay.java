@@ -7,11 +7,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.samsungproject.game.BecomeHero;
 
-public class HeadUpDisplay {
+public class HeadUpDisplay implements Disposable {
     public Stage stage;
     private Viewport viewport;
     private final Integer worldTimer;
@@ -54,5 +55,10 @@ public class HeadUpDisplay {
         table.add(countDownLabel).expandX();
 
         stage.addActor(table);
+    }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
     }
 }

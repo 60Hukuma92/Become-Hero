@@ -1,9 +1,13 @@
 package com.samsungproject.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -20,10 +24,16 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.samsungproject.game.BecomeHero;
+import com.samsungproject.game.Tools.B2WorldCreator;
 import com.samsungproject.game.scenes.HeadUpDisplay;
+import com.samsungproject.game.sprites.Hero;
 
 public class PlayScreen implements Screen {
+    //Reference to our game, used to set screens
     private BecomeHero game;
+    private TextureAtlas atlas;
+
+
     //basic PlayScreen variables
     private OrthographicCamera gameCamera;
     private Viewport gameViewport;
@@ -38,7 +48,11 @@ public class PlayScreen implements Screen {
     private TiledMap map;
     private OrthoCachedTiledMapRenderer renderer;
 
+    //sprites
+    private Hero player;
+
     public PlayScreen(BecomeHero game) {
+        atlas = new TextureAtlas("Sprites.pack");
         this.game = game;
         //create cam used to follow mario through cam world
         this.gameCamera = new OrthographicCamera();
@@ -52,74 +66,27 @@ public class PlayScreen implements Screen {
         //Load our map and setup our map renderer
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("world_1-1.tmx");
-        renderer = new OrthoCachedTiledMapRenderer(map);
+        renderer = new OrthoCachedTiledMapRenderer(map, 1);
 
         //initially set our gameCamera to be centered correctly at the start of map
         gameCamera.position.set(gameViewport.getWorldWidth() / 2, gameViewport.getWorldHeight() / 2 + 240, 0);
         // +240 because the world is actually 480px and half of it is a secret room down the center
 
         //create our Box2D world, setting no gravity in X, -10 gravity in Y, and allow bodies to sleep
-        world = new World(new Vector2(0, 0), true);
+        world = new World(new Vector2(0, -100), true);
+
         //allows for debug lines of our box2d world
         b2dr = new Box2DDebugRenderer();
 
-        //will be placed in their classes later//////////////////////
-        BodyDef bodyDef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fixtureDef = new FixtureDef();
-        Body body;
+        new B2WorldCreator(world, map);
 
-        //create ground bodies/fixtures
-        for (MapObject object : map.getLayers().get(1).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+        //create hero in our game world
+        player = new Hero(world, this);
 
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);
+    }
 
-            body = world.createBody(bodyDef);
-            shape.setAsBox(rectangle.getWidth() / 2, rectangle.getHeight() / 2);
-            fixtureDef.shape = shape;
-            body.createFixture(fixtureDef);
-        }
-
-        //create pipe bodies/fixtures
-        for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);
-
-            body = world.createBody(bodyDef);
-            shape.setAsBox(rectangle.getWidth() / 2, rectangle.getHeight() / 2);
-            fixtureDef.shape = shape;
-            body.createFixture(fixtureDef);
-        }
-
-        //create coin bodies/fixtures
-        for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);
-
-            body = world.createBody(bodyDef);
-            shape.setAsBox(rectangle.getWidth() / 2, rectangle.getHeight() / 2);
-            fixtureDef.shape = shape;
-            body.createFixture(fixtureDef);
-        }
-
-        //create brick bodies/fixtures
-        for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);
-
-            body = world.createBody(bodyDef);
-            shape.setAsBox(rectangle.getWidth() / 2, rectangle.getHeight() / 2);
-            fixtureDef.shape = shape;
-            body.createFixture(fixtureDef);
-        }
+    public TextureAtlas getAtlas() {
+        return atlas;
     }
 
     @Override
@@ -127,17 +94,12 @@ public class PlayScreen implements Screen {
 
     }
 
-    private void handleInput(float deltaTime) {
-        //control our player using immediate impulses
-        if (Gdx.input.isTouched()) {
-            gameCamera.position.x += 100*deltaTime;
-        }
-
-    }
-
-    public void update(float deltaTime) {
+    public void update(float deltaTime){
         //handle user input
         handleInput(deltaTime);
+
+        //takes 1 step in the physics simulation(60 times per second)
+        world.step(1 / 60f, 6, 2);
 
         //update our gameCamera with correct coordinates after changes
         gameCamera.update();
@@ -156,6 +118,10 @@ public class PlayScreen implements Screen {
 
         //render our game map
         renderer.render();
+        //gameCamera.position.x = player.b2dBody.getPosition().x;
+        //this is in progress
+        if (player.b2dBody.getPosition().x >= BecomeHero.VIRTUAL_WIDTH / 2)
+            gameCamera.position.x = player.b2dBody.getPosition().x;
 
         //Set our batch to now draw what the Hud camera sees.
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
@@ -164,7 +130,28 @@ public class PlayScreen implements Screen {
         //renderer our Box2DDebugLines
         b2dr.render(world, gameCamera.combined);
 
+        game.batch.setProjectionMatrix(gameCamera.combined);
+        game.batch.begin();
+        player.draw(game.batch);
+        game.batch.end();
     }
+    private void handleInput(float deltaTime) {
+        //control our player using immediate impulses
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            player.b2dBody.setLinearVelocity(0, 1000);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2dBody.getLinearVelocity().x <= 35) {
+            player.b2dBody.setLinearVelocity(40, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2dBody.getLinearVelocity().x <= -35) {
+            player.b2dBody.setLinearVelocity(-40, 0);
+        }
+        //
+        if (Gdx.input.isTouched()) {
+            player.b2dBody.setLinearVelocity(100, 100);
+        }
+    }
+
 
     @Override
     public void resize(int width, int height) {
@@ -189,6 +176,10 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        map.dispose();
+        renderer.dispose();
+        world.dispose();
+        b2dr.dispose();
+        hud.dispose();
     }
 }

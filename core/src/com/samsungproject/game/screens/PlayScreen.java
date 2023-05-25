@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.samsungproject.game.BecomeHero;
 import com.samsungproject.game.Tools.B2WorldCreator;
 import com.samsungproject.game.Tools.WorldContactListener;
-import com.samsungproject.game.scenes.HeadUpDisplay;
+import com.samsungproject.game.screens.scenes.HeadUpDisplay;
 import com.samsungproject.game.sprites.Hero;
 import com.samsungproject.game.SoundPlayer;
 

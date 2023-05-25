@@ -10,5 +10,6 @@ public class SoundPlayer {
         theme.setVolume(0.2f);
         theme.play();
         if (!theme.isPlaying()) theme = Gdx.audio.newMusic(Gdx.files.internal("music/33 Ladies of the Woods.mp3"));
+        theme.play();
     }
 }

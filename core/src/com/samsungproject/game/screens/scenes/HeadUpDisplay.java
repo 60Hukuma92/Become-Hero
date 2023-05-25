@@ -1,4 +1,4 @@
-package com.samsungproject.game.scenes;
+package com.samsungproject.game.screens.scenes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;

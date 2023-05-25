@@ -2,6 +2,7 @@ package com.samsungproject.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -51,7 +52,55 @@ public class PlayScreen implements Screen {
     //sprites
     private Hero player;
 
+    //scaling
+    private float scaleX, scaleY;
+
     public PlayScreen(BecomeHero game) {
+//        //multitouch settings
+//        Gdx.input.setInputProcessor(new InputProcessor() {
+//            @Override
+//            public boolean keyDown(int keycode) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean keyUp(int keycode) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean keyTyped(char character) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean touchDragged(int screenX, int screenY, int pointer) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean mouseMoved(int screenX, int screenY) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean scrolled(float amountX, float amountY) {
+//                return false;
+//            }
+//        });
+
+        scaleX = (float) BecomeHero.VIRTUAL_WIDTH / Gdx.graphics.getWidth();
+        scaleY = (float) BecomeHero.VIRTUAL_HEIGHT / Gdx.graphics.getHeight();
         atlas = new TextureAtlas("Sprites.pack");
         this.game = game;
         //create cam used to follow mario through cam world
@@ -69,7 +118,7 @@ public class PlayScreen implements Screen {
         renderer = new OrthoCachedTiledMapRenderer(map, 1);
 
         //initially set our gameCamera to be centered correctly at the start of map
-        gameCamera.position.set(gameViewport.getWorldWidth() / 2, gameViewport.getWorldHeight() / 2 + 240, 0);
+        gameCamera.position.set(gameViewport.getWorldWidth() / 2, gameViewport.getWorldHeight() / 2 + 240 , 0);
         // +240 because the world is actually 480px and half of it is a secret room down the center
 
         //create our Box2D world, setting no gravity in X, -100 gravity in Y, and allow bodies to sleep
@@ -137,32 +186,58 @@ public class PlayScreen implements Screen {
         game.batch.setProjectionMatrix(gameCamera.combined);
         game.batch.begin();
         player.draw(game.batch);
+        game.batch.draw(new Texture("Controller.png"), gameCamera.position.x - 200, 240);
+        game.batch.draw(new Texture("JumpControl.png"), gameCamera.position.x + 150, 240 + 24);
         game.batch.end();
     }
 
     private void handleInput(float deltaTime) {
-        //control our player using immediate impulses
+        //pc
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP) && player.b2dBody.getLinearVelocity().y == 0) {
             player.b2dBody.setLinearVelocity(0, 1000);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2dBody.getLinearVelocity().x <= 45 && player.b2dBody.getLinearVelocity().y == 0) {
-            player.b2dBody.setLinearVelocity(40, 0);
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2dBody.getLinearVelocity().x <= 50 && player.b2dBody.getLinearVelocity().y == 0) {
+            player.b2dBody.setLinearVelocity(45, 0);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2dBody.getLinearVelocity().x >= -45 && player.b2dBody.getLinearVelocity().y == 0) {
-            player.b2dBody.setLinearVelocity(-40, 0);
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2dBody.getLinearVelocity().x >= -50 && player.b2dBody.getLinearVelocity().y == 0) {
+            player.b2dBody.setLinearVelocity(-45, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            player.b2dBody.setLinearVelocity(300, 1500);
+            player.b2dBody.setLinearVelocity(400, 1700);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            player.b2dBody.setLinearVelocity(-300, 1500);
+            player.b2dBody.setLinearVelocity(-400, 1700);
         }
-        //
+        //android
         if (Gdx.input.isTouched()) {
-            player.b2dBody.setLinearVelocity(100, 100);
+            //going right
+            if ((double)Gdx.input.getX() * scaleX <= 96 && (double)Gdx.input.getX() * scaleX > 48 && (double)Gdx.input.getY() * scaleY >= 12 && player.b2dBody.getLinearVelocity().y == 0) {
+                player.b2dBody.setLinearVelocity(45, 0);
+                //right jumping
+                if (((double)Gdx.input.getX() * scaleX <= 96 && (double)Gdx.input.getY() * scaleY < 155 - 24 && (double)Gdx.input.getY() * scaleY >= 120
+                        ||((double)Gdx.input.getX() * scaleX > 350 && (double)Gdx.input.getY() * scaleY >= 150 - 14 && (double)Gdx.input.getY() * scaleY < 150 + 24))
+                        && player.b2dBody.getLinearVelocity().y == 0) {
+                    player.b2dBody.setLinearVelocity(350, 1500);
+                }
+            }
+            //going left
+            if ((double)Gdx.input.getX() * scaleX <= 48 && (double)Gdx.input.getY() * scaleY >= 12 && player.b2dBody.getLinearVelocity().y == 0) {
+                player.b2dBody.setLinearVelocity(-45, 0);
+                //left jumping
+                if (((double)Gdx.input.getX() * scaleX <= 96 && (double)Gdx.input.getY() * scaleY < 155 - 24 && (double)Gdx.input.getY() * scaleY >= 120
+                        ||((double)Gdx.input.getX() * scaleX > 350 && (double)Gdx.input.getY() * scaleY >= 150 - 14 && (double)Gdx.input.getY() * scaleY < 150 + 24))
+                        && player.b2dBody.getLinearVelocity().y == 0) {
+                    player.b2dBody.setLinearVelocity(-350, 1500);
+                }
+            }
+            //jumping
+            if (((double)Gdx.input.getX() * scaleX <= 96 && (double)Gdx.input.getY() * scaleY < 155 - 16 && (double)Gdx.input.getY() * scaleY >= 120
+                    ||((double)Gdx.input.getX() * scaleX > 350 && (double)Gdx.input.getY() * scaleY >= 150 - 14 && (double)Gdx.input.getY() * scaleY < 150 + 24))
+                    && player.b2dBody.getLinearVelocity().y == 0) {
+                player.b2dBody.setLinearVelocity(0, 1000);
+            }
         }
     }
-
 
     @Override
     public void resize(int width, int height) {

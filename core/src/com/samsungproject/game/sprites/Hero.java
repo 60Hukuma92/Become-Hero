@@ -14,9 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.samsungproject.game.screens.PlayScreen;
 
 public class Hero extends Sprite {
-    public enum State {FALLING, JUMPING, STANDING, RUNNING}
-
-    ;
+    public enum State {FALLING, JUMPING, STANDING, RUNNING};
     public State currentState;
     public State previousState;
     public World world;
@@ -25,6 +23,7 @@ public class Hero extends Sprite {
     private Animation<TextureRegion> heroRun;
     private Animation<TextureRegion> heroJump;
     private float stateTimer;
+
     private boolean runningRight;
 
     public Hero(World world, PlayScreen screen) {
@@ -130,5 +129,9 @@ public class Hero extends Sprite {
         fixtureDef.isSensor = true;
 
         b2dBody.createFixture(fixtureDef).setUserData("head");
+    }
+
+    public boolean isRunningRight() {
+        return runningRight;
     }
 }

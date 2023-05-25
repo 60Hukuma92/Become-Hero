@@ -1,15 +1,26 @@
 package com.samsungproject.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.samsungproject.game.screens.PlayScreen;
 
 public class BecomeHero extends Game {
+	//Virtual Screen size
 	public static final int VIRTUAL_WIDTH = 400;
 	public static final int VIRTUAL_HEIGHT = 220;
 	public SpriteBatch batch;
+
+	//Box2D Collision Bits
+//	public static final short DEFAULT_BIT = 1;
+//	public static final short HERO_BIT = 2;
+//	public static final short BRICK_BIT = 4;
+//	public static final short COIN_BIT = 8;
+//	public static final short DESTROYED_BIT = 16;
 
 	@Override
 	public void create () {
@@ -24,6 +35,7 @@ public class BecomeHero extends Game {
 
 	@Override
 	public void dispose () {
+		super.dispose();
 		batch.dispose();
 	}
 

@@ -2,25 +2,17 @@ package com.samsungproject.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -29,6 +21,7 @@ import com.samsungproject.game.Tools.B2WorldCreator;
 import com.samsungproject.game.Tools.WorldContactListener;
 import com.samsungproject.game.scenes.HeadUpDisplay;
 import com.samsungproject.game.sprites.Hero;
+import com.samsungproject.game.SoundPlayer;
 
 public class PlayScreen implements Screen {
     //Reference to our game, used to set screens
@@ -52,6 +45,9 @@ public class PlayScreen implements Screen {
     //sprites
     private Hero player;
 
+    //music
+    private Music music;
+
     //scaling
     private float scaleX, scaleY;
 
@@ -60,6 +56,9 @@ public class PlayScreen implements Screen {
         scaleY = (float) BecomeHero.VIRTUAL_HEIGHT / Gdx.graphics.getHeight();
         atlas = new TextureAtlas("Sprites.pack");
         this.game = game;
+
+        SoundPlayer.play();
+
         //create cam used to follow mario through cam world
         this.gameCamera = new OrthographicCamera();
 
@@ -79,7 +78,7 @@ public class PlayScreen implements Screen {
         // +240 because the world is actually 480px and half of it is a secret room down the center
 
         //create our Box2D world, setting no gravity in X, -100 gravity in Y, and allow bodies to sleep
-        world = new World(new Vector2(0, -110), true);
+        world = new World(new Vector2(0, -100), true);
 
         //allows for debug lines of our box2d world
         b2dr = new Box2DDebugRenderer();
@@ -110,6 +109,7 @@ public class PlayScreen implements Screen {
         world.step(1 / 60f, 6, 2);
 
         player.update(deltaTime);
+        hud.update(deltaTime);
 
         //update our gameCamera with correct coordinates after changes
         gameCamera.update();
@@ -196,11 +196,11 @@ public class PlayScreen implements Screen {
             if (player.isRunningRight() && (double) Gdx.input.getX() * scaleX >= 48 - 12 && (double) Gdx.input.getX() * scaleX <= 48 + 12
                     && (double) Gdx.input.getY() * scaleY >= 155 - 12 && (double) Gdx.input.getY() * scaleY <= 155 + 12
                     && player.b2dBody.getLinearVelocity().y == 0) {
-                player.b2dBody.setLinearVelocity(400, 1700);
+                player.b2dBody.setLinearVelocity(400, 1900);
             } else if (!player.isRunningRight() && (double) Gdx.input.getX() * scaleX >= 48 - 12 && (double) Gdx.input.getX() * scaleX <= 48 + 12
                     && (double) Gdx.input.getY() * scaleY >= 155 - 14 && (double) Gdx.input.getY() * scaleY <= 155 + 12
                     && player.b2dBody.getLinearVelocity().y == 0) {
-                player.b2dBody.setLinearVelocity(-400, 1700);
+                player.b2dBody.setLinearVelocity(-400, 1900);
             }
         }
     }

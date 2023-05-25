@@ -14,19 +14,23 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.samsungproject.game.BecomeHero;
 
 public class HeadUpDisplay implements Disposable {
+    //Scene2D.ui Stage and its own Viewport for HUD
     public Stage stage;
     private Viewport viewport;
-    private final Integer worldTimer;
+    private Integer worldTimer;
 
+    //Hero score/time Tracking Variables
     private float timeCount;
-    private Integer score;
+    private static Integer score;
 
-    Label countDownLabel;
-    Label scoreLabel;
-    Label timeLabel;
-    Label levelLabel;
-    Label worldLabel;
-    Label heroLabel;
+
+    //scene 2D widgets
+    private Label countDownLabel;
+    private static Label scoreLabel;
+    private Label timeLabel;
+    private Label levelLabel;
+    private Label worldLabel;
+    private Label heroLabel;
 
     public HeadUpDisplay(SpriteBatch spriteBatch) {
         worldTimer = 300;
@@ -55,6 +59,20 @@ public class HeadUpDisplay implements Disposable {
         table.add(countDownLabel).expandX();
 
         stage.addActor(table);
+    }
+
+    public void update(float deltaTime) {
+        timeCount += deltaTime;
+        if (timeCount >= 1) {
+            worldTimer--;
+            countDownLabel.setText(String.format("%03d", worldTimer));
+            timeCount = 0;
+        }
+    }
+
+    public static void addScore(int points) {
+        score += points;
+        scoreLabel.setText(String.format("%06d", score));
     }
 
     @Override

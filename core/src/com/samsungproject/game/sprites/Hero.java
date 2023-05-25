@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.samsungproject.game.BecomeHero;
 import com.samsungproject.game.screens.PlayScreen;
 
 public class Hero extends Sprite {
@@ -119,6 +120,8 @@ public class Hero extends Sprite {
         FixtureDef fixtureDef = new FixtureDef();
         CircleShape shape = new CircleShape();
         shape.setRadius(7);
+//        fixtureDef.filter.categoryBits = BecomeHero.HERO_BIT;
+//        fixtureDef.filter.maskBits = BecomeHero.DEFAULT_BIT | BecomeHero.COIN_BIT | BecomeHero.HERO_BIT;
 
         fixtureDef.shape = shape;
         b2dBody.createFixture(fixtureDef);

@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.samsungproject.game.BecomeHero;
 import com.samsungproject.game.Tools.B2WorldCreator;
+import com.samsungproject.game.Tools.WorldContactListener;
 import com.samsungproject.game.scenes.HeadUpDisplay;
 import com.samsungproject.game.sprites.Hero;
 
@@ -32,7 +33,6 @@ public class PlayScreen implements Screen {
     //Reference to our game, used to set screens
     private BecomeHero game;
     private TextureAtlas atlas;
-
 
     //basic PlayScreen variables
     private OrthographicCamera gameCamera;
@@ -72,8 +72,8 @@ public class PlayScreen implements Screen {
         gameCamera.position.set(gameViewport.getWorldWidth() / 2, gameViewport.getWorldHeight() / 2 + 240, 0);
         // +240 because the world is actually 480px and half of it is a secret room down the center
 
-        //create our Box2D world, setting no gravity in X, -10 gravity in Y, and allow bodies to sleep
-        world = new World(new Vector2(0, -100), true);
+        //create our Box2D world, setting no gravity in X, -100 gravity in Y, and allow bodies to sleep
+        world = new World(new Vector2(0, -110), true);
 
         //allows for debug lines of our box2d world
         b2dr = new Box2DDebugRenderer();
@@ -82,6 +82,8 @@ public class PlayScreen implements Screen {
 
         //create hero in our game world
         player = new Hero(world, this);
+
+        world.setContactListener(new WorldContactListener());
 
     }
 
@@ -94,12 +96,14 @@ public class PlayScreen implements Screen {
 
     }
 
-    public void update(float deltaTime){
+    public void update(float deltaTime) {
         //handle user input
         handleInput(deltaTime);
 
         //takes 1 step in the physics simulation(60 times per second)
         world.step(1 / 60f, 6, 2);
+
+        player.update(deltaTime);
 
         //update our gameCamera with correct coordinates after changes
         gameCamera.update();
@@ -135,16 +139,23 @@ public class PlayScreen implements Screen {
         player.draw(game.batch);
         game.batch.end();
     }
+
     private void handleInput(float deltaTime) {
         //control our player using immediate impulses
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP) && player.b2dBody.getLinearVelocity().y == 0) {
             player.b2dBody.setLinearVelocity(0, 1000);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2dBody.getLinearVelocity().x <= 35) {
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2dBody.getLinearVelocity().x <= 45 && player.b2dBody.getLinearVelocity().y == 0) {
             player.b2dBody.setLinearVelocity(40, 0);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2dBody.getLinearVelocity().x <= -35) {
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2dBody.getLinearVelocity().x >= -45 && player.b2dBody.getLinearVelocity().y == 0) {
             player.b2dBody.setLinearVelocity(-40, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            player.b2dBody.setLinearVelocity(300, 1500);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            player.b2dBody.setLinearVelocity(-300, 1500);
         }
         //
         if (Gdx.input.isTouched()) {

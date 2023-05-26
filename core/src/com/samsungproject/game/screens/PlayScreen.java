@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -20,8 +21,14 @@ import com.samsungproject.game.BecomeHero;
 import com.samsungproject.game.Tools.B2WorldCreator;
 import com.samsungproject.game.Tools.WorldContactListener;
 import com.samsungproject.game.screens.scenes.HeadUpDisplay;
+import com.samsungproject.game.sprites.Enemy;
+import com.samsungproject.game.sprites.Forspike;
+import com.samsungproject.game.sprites.Ghoulfreak;
 import com.samsungproject.game.sprites.Hero;
 import com.samsungproject.game.SoundPlayer;
+import com.samsungproject.game.sprites.Spikurtle;
+
+import java.util.ArrayList;
 
 public class PlayScreen implements Screen {
     //Reference to our game, used to set screens
@@ -44,6 +51,7 @@ public class PlayScreen implements Screen {
 
     //sprites
     private Hero player;
+    private ArrayList<Enemy> enemies;
 
     //music
     private Music music;
@@ -83,11 +91,20 @@ public class PlayScreen implements Screen {
         //allows for debug lines of our box2d world
         b2dr = new Box2DDebugRenderer();
 
-        new B2WorldCreator(world, map);
+        new B2WorldCreator(this);
 
         //create hero in our game world
-        player = new Hero(world, this);
+        player = new Hero(this);
 
+        //create enemies in our game world
+        enemies = new ArrayList<>();
+        for (int i = 0; i < 25; i++) {
+            if (i <= 10)
+            enemies.add(new Ghoulfreak(player,this, MathUtils.random(0, 3000), 32));
+            if (i > 10 && i < 17)
+                enemies.add(new Spikurtle(player,this, MathUtils.random(0, 3000), 32));
+            else enemies.add(new Forspike(player,this, MathUtils.random(0, 3000), 32));
+        }
         world.setContactListener(new WorldContactListener());
 
     }
@@ -109,6 +126,11 @@ public class PlayScreen implements Screen {
         world.step(1 / 60f, 6, 2);
 
         player.update(deltaTime);
+
+        for (Enemy enemy : enemies) {
+            enemy.update(deltaTime);
+        }
+
         hud.update(deltaTime);
 
         //update our gameCamera with correct coordinates after changes
@@ -143,6 +165,10 @@ public class PlayScreen implements Screen {
         game.batch.setProjectionMatrix(gameCamera.combined);
         game.batch.begin();
         player.draw(game.batch);
+        for (Enemy enemy : enemies) {
+            enemy.draw(game.batch);
+        }
+
         game.batch.draw(new Texture("Controller.png"), gameCamera.position.x - 200, 240);
         game.batch.draw(new Texture("JumpControl.png"), gameCamera.position.x + 150, 240 + 24);
         game.batch.end();
@@ -162,6 +188,9 @@ public class PlayScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             player.b2dBody.setLinearVelocity(400, 1700);
         }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            player.b2dBody.setLinearVelocity(1000, 100);
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             player.b2dBody.setLinearVelocity(-400, 1700);
         }
@@ -179,11 +208,23 @@ public class PlayScreen implements Screen {
                     && player.b2dBody.getLinearVelocity().y == 0) {
                 player.b2dBody.setLinearVelocity(45, 0);
             }
+            //going a little bit right in the air
+            if ((double) Gdx.input.getX() * scaleX >= 96 - 24 && (double) Gdx.input.getX() * scaleX <= 96
+                    && (double) Gdx.input.getY() * scaleY >= 155 - 17 && (double) Gdx.input.getY() * scaleY <= 155 + 17
+                    && player.b2dBody.getLinearVelocity().y != 0) {
+                player.b2dBody.setLinearVelocity(45, -50);
+            }
             //going left
             if ((double) Gdx.input.getX() * scaleX <= 24
                     && (double) Gdx.input.getY() * scaleY >= 155 - 17 && (double) Gdx.input.getY() * scaleY <= 155 + 17
                     && player.b2dBody.getLinearVelocity().y == 0) {
                 player.b2dBody.setLinearVelocity(-45, 0);
+            }
+            //going a little bit left in the air
+            if ((double) Gdx.input.getX() * scaleX <= 24
+                    && (double) Gdx.input.getY() * scaleY >= 155 - 17 && (double) Gdx.input.getY() * scaleY <= 155 + 17
+                    && player.b2dBody.getLinearVelocity().y != 0) {
+                player.b2dBody.setLinearVelocity(-45, -50);
             }
             //jumping
             if (((double) Gdx.input.getX() * scaleX > 24 && (double) Gdx.input.getX() * scaleX < 48 + 20
@@ -210,6 +251,15 @@ public class PlayScreen implements Screen {
         //updated our game viewport
         gameViewport.update(width, height);
     }
+
+    public TiledMap getMap() {
+        return map;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
 
     @Override
     public void pause() {

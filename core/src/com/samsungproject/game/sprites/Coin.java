@@ -9,10 +9,11 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.samsungproject.game.BecomeHero;
+import com.samsungproject.game.screens.PlayScreen;
 
-public class Coin extends InteractiveTileObject{
-    public Coin(World world, TiledMap map, Rectangle bounds) {
-        super(world, map, bounds);
+public class Coin extends InteractiveTileObject {
+    public Coin(PlayScreen screen, Rectangle bounds) {
+        super(screen, bounds);
         fixture.setUserData(this);
 //        setCategoryFilter(BecomeHero.COIN_BIT);
     }

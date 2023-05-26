@@ -27,10 +27,10 @@ public class Hero extends Sprite {
 
     private boolean runningRight;
 
-    public Hero(World world, PlayScreen screen) {
+    public Hero(PlayScreen screen) {
         super(screen.getAtlas().findRegion("little_hero"));
         //initialize default values
-        this.world = world;
+        this.world = screen.getWorld();
 
         currentState = State.STANDING;
         previousState = State.STANDING;
@@ -121,7 +121,7 @@ public class Hero extends Sprite {
         CircleShape shape = new CircleShape();
         shape.setRadius(7);
 //        fixtureDef.filter.categoryBits = BecomeHero.HERO_BIT;
-//        fixtureDef.filter.maskBits = BecomeHero.DEFAULT_BIT | BecomeHero.COIN_BIT | BecomeHero.HERO_BIT;
+//        fixtureDef.filter.maskBits = BecomeHero.GROUND_BIT | BecomeHero.COIN_BIT | BecomeHero.HERO_BIT | BecomeHero.OBJECT_BIT;
 
         fixtureDef.shape = shape;
         b2dBody.createFixture(fixtureDef);

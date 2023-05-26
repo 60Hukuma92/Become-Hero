@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.samsungproject.game.BecomeHero;
+import com.samsungproject.game.screens.PlayScreen;
 
 public class Pipe {
     protected World world;
@@ -17,9 +18,9 @@ public class Pipe {
     protected Rectangle bounds;
     protected Body body;
 
-    public Pipe(World world, TiledMap map, Rectangle bounds) {
-        this.world = world;
-        this.map = map;
+    public Pipe(PlayScreen screen, Rectangle bounds) {
+        this.world = screen.getWorld();
+        this.map = screen.getMap();
         this.bounds = bounds;
 
         BodyDef bodyDef = new BodyDef();
@@ -31,6 +32,7 @@ public class Pipe {
         body = world.createBody(bodyDef);
         shape.setAsBox(bounds.getWidth() / 2, bounds.getHeight() / 2);
         fixtureDef.shape = shape;
+//        fixtureDef.filter.categoryBits = BecomeHero.OBJECT_BIT;
         body.createFixture(fixtureDef);
     }
 }

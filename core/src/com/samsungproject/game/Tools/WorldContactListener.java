@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.samsungproject.game.sprites.Enemy;
 import com.samsungproject.game.sprites.InteractiveTileObject;
 
 public class WorldContactListener implements ContactListener {
@@ -13,6 +14,8 @@ public class WorldContactListener implements ContactListener {
     public void beginContact(Contact contact) {
         Fixture fixA = contact.getFixtureA();
         Fixture fixB = contact.getFixtureB();
+
+        //int collisionDef = fixA.getFilterData().categoryBits | fixB.getFilterData().categoryBits;
 
         if (fixA.getUserData() == "head" || fixB.getUserData() == "head") {
             Fixture head = fixA.getUserData() == "head" ? fixA : fixB;
@@ -22,6 +25,15 @@ public class WorldContactListener implements ContactListener {
                 ((InteractiveTileObject) object.getUserData()).onHeadHit();
             }
         }
+        if (fixA.getUserData() == "freak's_head" || fixB.getUserData() == "freak's_head") {
+            Fixture head = fixA.getUserData() == "freak's_head" ? fixA : fixB;
+            Fixture object = head == fixA ? fixB : fixA;
+            if (object.getUserData() != null && Enemy.class.isAssignableFrom(object.getUserData().getClass())) {
+                ((Enemy) object.getUserData()).hitOnHead();
+            }
+        }
+
+
     }
 
     @Override

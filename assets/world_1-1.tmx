@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="227" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="227">
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="227" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="233">
  <tileset firstgid="1" source="NES - Super Mario Bros - World 1-1.tsx"/>
  <layer id="1" name="world-1-1" width="227" height="30">
   <data encoding="base64" compression="zlib">
@@ -13,6 +13,8 @@
   <object id="14" x="2480" y="208" width="1152" height="32"/>
   <object id="183" x="768" y="448" width="256" height="32"/>
   <object id="184" x="1024" y="240" width="16" height="240"/>
+  <object id="228" x="0" y="0" width="1.66667" height="207.667"/>
+  <object id="231" x="3630.33" y="0" width="1.33333" height="207.333"/>
  </objectgroup>
  <objectgroup id="2" name="Pipes">
   <object id="17" x="448" y="176" width="32" height="32"/>

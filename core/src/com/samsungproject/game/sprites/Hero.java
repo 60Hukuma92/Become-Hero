@@ -15,15 +15,17 @@ import com.samsungproject.game.BecomeHero;
 import com.samsungproject.game.screens.PlayScreen;
 
 public class Hero extends Sprite {
-    public enum State {FALLING, JUMPING, STANDING, RUNNING};
+    public enum State {FALLING, JUMPING, STANDING, RUNNING, DEAD};
     public State currentState;
     public State previousState;
     public World world;
     public Body b2dBody;
     private TextureRegion heroStand;
+    private TextureRegion heroDead;
     private Animation<TextureRegion> heroRun;
     private Animation<TextureRegion> heroJump;
     private float stateTimer;
+    private boolean heroIsDead;
 
     private boolean runningRight;
 
@@ -48,7 +50,11 @@ public class Hero extends Sprite {
 
         //define hero in Box2d
         defineHero();
+
         heroStand = new TextureRegion(getTexture(), 0, 0, 16, 16);
+
+        heroDead = new TextureRegion(getTexture(), 6 * 16, 0, 16, 16);
+
         setBounds(0, 0, 16, 16);
         setRegion(heroStand);
     }
@@ -64,6 +70,9 @@ public class Hero extends Sprite {
         //depending on the state, get corresponding animation keyFrame
         TextureRegion region;
         switch (currentState) {
+            case DEAD:
+                region = heroDead;
+                break;
             case JUMPING:
                 region = heroJump.getKeyFrame(stateTimer);
                 break;
@@ -107,6 +116,7 @@ public class Hero extends Sprite {
         else if (b2dBody.getLinearVelocity().y < 0) return State.FALLING;
             //if hero is positive or negative in the X axis he is running
         else if (b2dBody.getLinearVelocity().x != 0) return State.RUNNING;
+        else if (heroIsDead) return State.DEAD;
         //if none of these return then he must be standing
         else return State.STANDING;
     }

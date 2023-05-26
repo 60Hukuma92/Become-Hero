@@ -17,6 +17,11 @@ public class HeadUpDisplay implements Disposable {
     //Scene2D.ui Stage and its own Viewport for HUD
     public Stage stage;
     private Viewport viewport;
+
+    public Integer getWorldTimer() {
+        return worldTimer;
+    }
+
     private Integer worldTimer;
 
     //Hero score/time Tracking Variables
@@ -70,8 +75,8 @@ public class HeadUpDisplay implements Disposable {
         }
     }
 
-    public static void addScore(int points) {
-        score += points;
+    public static void setScore(int points) {
+        score = points;
         scoreLabel.setText(String.format("%06d", score));
     }
 

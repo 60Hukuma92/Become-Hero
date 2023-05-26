@@ -20,6 +20,6 @@ public class Brick extends InteractiveTileObject {
         Gdx.app.log("Brick", "Collusion");
         //setCategoryFilter(BecomeHero.DESTROYED_BIT);
         //getCell().setTile(null);
-        HeadUpDisplay.addScore(200);
+//        HeadUpDisplay.addScore(200);
     }
 }

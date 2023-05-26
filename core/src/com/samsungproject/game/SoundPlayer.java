@@ -11,6 +11,7 @@ public class SoundPlayer {
         theme.setVolume(0.2f);
         nextTheme.setVolume(0.2f);
         theme.play();
-        if (!theme.isPlaying()) nextTheme.play();
+        theme.setLooping(true);
+//        if (!theme.isPlaying()) nextTheme.play();
     }
 }

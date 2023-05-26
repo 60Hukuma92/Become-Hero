@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.samsungproject.game.screens.PlayScreen;
+import com.samsungproject.game.screens.StartScreen;
 
 public class BecomeHero extends Game {
 	//Virtual Screen size
@@ -15,11 +16,10 @@ public class BecomeHero extends Game {
 	public static final int VIRTUAL_HEIGHT = 220;
 	public SpriteBatch batch;
 
-
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		setScreen(new PlayScreen(this));
+		setScreen(new StartScreen(this));
 	}
 
 	@Override

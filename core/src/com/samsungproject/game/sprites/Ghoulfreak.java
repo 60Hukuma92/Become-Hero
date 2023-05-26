@@ -71,7 +71,7 @@ public class Ghoulfreak extends Enemy{
 
         fixtureDef.shape = head;
 
-        fixtureDef.restitution = 0.8f;
+        fixtureDef.restitution = 0.2f;
         b2dBody.createFixture(fixtureDef).setUserData("freak's_head");
     }
 

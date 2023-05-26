@@ -2,7 +2,6 @@ package com.samsungproject.game.screens.scenes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -70,6 +69,9 @@ public class HeadUpDisplay implements Disposable {
         timeCount += deltaTime;
         if (timeCount >= 1) {
             worldTimer--;
+            if (worldTimer <= 0) {
+                throw new RuntimeException("Timer < 0");
+            }
             countDownLabel.setText(String.format("%03d", worldTimer));
             timeCount = 0;
         }

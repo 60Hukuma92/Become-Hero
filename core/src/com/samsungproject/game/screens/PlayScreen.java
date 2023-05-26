@@ -163,9 +163,8 @@ public class PlayScreen implements Screen {
 
         //renderer our Box2DDebugLines
         //b2dr.render(world, gameCamera.combined);
-        if (hud.getWorldTimer() <= 0) {
-            player.currentState = Hero.State.DEAD;
-            player.b2dBody.setLinearVelocity(0, 1500);
+        if (hud.getWorldTimer() <= 0 || player.b2dBody.getPosition().y < 240) {
+            throw new RuntimeException("Hero died");
         }
 
         game.batch.setProjectionMatrix(gameCamera.combined);
